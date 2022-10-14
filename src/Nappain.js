@@ -7,6 +7,7 @@ function Nappain(props) {
  // const [teksti, setTeksti] = useState("")  //          [a,b]
 //  console.log("tila", tila)
   //tila = true  // setTila (false)
+  console.log ("props",props)
   return (
 
       <button onClick={()=>props.nappainPainettu(props.nappain)}>{props.nappain}</button>
