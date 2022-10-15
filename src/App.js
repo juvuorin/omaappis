@@ -30,18 +30,31 @@ function App() {
 
   const koulunNimiMuuttui = (nimi) => {
     
-    const kouluKopio = JSON.parse(JSON.stringify(koulu))
-    kouluKopio.nimi = nimi
+    // const kouluKopio = JSON.parse(JSON.stringify(koulu))
+    // kouluKopio.nimi = nimi
+   
+    // TAI "optimoiden"
+   
+    // tai kouluKopio = {...koulu}
     
-    setKoulu(kouluKopio)
-    console.log(kouluKopio)
+   
+    // Tämä osa ei muutu
+    // setKoulu(kouluKopio)
+    // console.log(kouluKopio)
   }
   const oppilaanNimiMuuttui = (nimi,oppilaanIndex,luokanIndex) => {
-    const kouluKopio = JSON.parse(JSON.stringify(koulu))
-    kouluKopio.luokat[luokanIndex].oppilaat[oppilaanIndex].nimi = nimi
-    console.log("OK")  
-    setKoulu(kouluKopio)
-    console.log(kouluKopio)
+    // const kouluKopio = JSON.parse(JSON.stringify(koulu))
+    // kouluKopio.luokat[luokanIndex].oppilaat[oppilaanIndex].nimi = nimi
+    
+    // TAI "optimoiden" :)
+    let kopioKoulusta = {...koulu}
+    kopioKoulusta.luokat = [...kopioKoulusta.luokat]
+    kopioKoulusta.luokat[luokanIndex].oppilaat = [...kopioKoulusta.luokat[luokanIndex].oppilaat]
+    kopioKoulusta.luokat[luokanIndex].oppilaat[oppilaanIndex].nimi=nimi 
+   
+    // Tämä osa ei muutu
+    setKoulu(kopioKoulusta)
+    console.log(kopioKoulusta)
   }
   return (
       <div>
