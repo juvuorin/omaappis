@@ -1,66 +1,61 @@
 import logo from './logo.svg';
 import './App.css';
 import Koulu from './Koulu';
-import {useState} from "react" 
+import { useState,useReducer } from "react"
 import Nappain from './Nappain';
 
-let oppilas1 = {nimi:"Olli Oppilas"}
+let oppilas1 = { nimi: "Olli Oppilas" }
 
-let oppilas2 = {nimi:"Mikko Mallikas"}
-let oppilas3 = {nimi:"Kalle Kolmonen"}
+let oppilas2 = { nimi: "Mikko Mallikas" }
+let oppilas3 = { nimi: "Kalle Kolmonen" }
 
 
-let luokka1 = {nimi:"3A",
-              opplaidenMäärä:27,
-              oppilaat:[oppilas1, oppilas3]
-              }
+let luokka1 = {
+  nimi: "3A",
+  opplaidenMäärä: 27,
+  oppilaat: [oppilas1, oppilas3]
+}
 
-let luokka2 = {nimi:"2B",
-              opplaidenMäärä:24,
-              oppilaat:[oppilas2]
-              }
+let luokka2 = {
+  nimi: "2B",
+  opplaidenMäärä: 24,
+  oppilaat: [oppilas2]
+}
 
-let koulu_ = { oppilaidenMäärä:100,
-              nimi:"Kangasalan ala-aste",
-              luokat:[luokka1,luokka2]}  
+let koulu_ = {
+  oppilaidenMäärä: 100,
+  nimi: "Kangasalan ala-aste",
+  luokat: [luokka1, luokka2]
+}
 
+function reducer(state, action) {
+  switch (action.type) {
+
+    case 'KOULUN_NIMI_MUUTTUI':
+      console.log("Reduceria kutsuttiin", action)
+      return {...state, nimi: action.payload.nimi};
+      
+    case 'OPPILAAN_NIMI_MUUTTUI':
+      console.log("Reduceria kutsuttiin", action)
+      let nimi = action.payload.nimi
+      let kouluKopio = {...state}
+      kouluKopio.luokat[action.payload.luokanIndex].oppilaat[action.payload.oppilaanIndex].nimi = nimi      
+      return kouluKopio
+    
+    
+      default:
+      throw new Error("reduceriin tultiin jännällä actionilla");
+  }
+}
 
 function App() {
-  const [koulu, setKoulu] = useState(koulu_)
 
-  const koulunNimiMuuttui = (nimi) => {
-    
-    // const kouluKopio = JSON.parse(JSON.stringify(koulu))
-    // kouluKopio.nimi = nimi
-   
-    // TAI "optimoiden"
-   
-    // tai kouluKopio = {...koulu}
-    
-   
-    // Tämä osa ei muutu
-    // setKoulu(kouluKopio)
-    // console.log(kouluKopio)
-  }
-  const oppilaanNimiMuuttui = (nimi,oppilaanIndex,luokanIndex) => {
-    // const kouluKopio = JSON.parse(JSON.stringify(koulu))
-    // kouluKopio.luokat[luokanIndex].oppilaat[oppilaanIndex].nimi = nimi
-    
-    // TAI "optimoiden" :)
-    let kopioKoulusta = {...koulu}
-    kopioKoulusta.luokat = [...kopioKoulusta.luokat]
-    kopioKoulusta.luokat[luokanIndex].oppilaat = [...kopioKoulusta.luokat[luokanIndex].oppilaat]
-    kopioKoulusta.luokat[luokanIndex].oppilaat[oppilaanIndex].nimi=nimi 
-   
-    // Tämä osa ei muutu
-    setKoulu(kopioKoulusta)
-    console.log(kopioKoulusta)
-  }
+  const [koulu, dispatch] = useReducer(reducer, koulu_);
+
   return (
-      <div>
-      <Koulu koulu = {koulu} oppilaanNimiMuuttui={oppilaanNimiMuuttui} koulunNimiMuuttui = {koulunNimiMuuttui}/> 
-
-      </div>
+    <div>
+      <Koulu koulu={koulu} dispatch={dispatch} />
+    </div>
   );
 }
 
