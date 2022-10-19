@@ -11,6 +11,8 @@ const Oppilas = (props) => {
           {
           nimi:event.target.value,
           oppilaanIndex:props.index,
+          koulunIndex:props.koulunIndex,
+  
           luokanIndex:props.luokanIndex}
           })}}  value = {props.oppilas.nimi}/>
   

@@ -22,36 +22,42 @@ let luokka2 = {
   oppilaat: [oppilas2]
 }
 
-let koulu_ = {
-  oppilaidenMäärä: 100,
-  nimi: "Kangasalan ala-aste",
-  luokat: [luokka1, luokka2],
+let appiksenData = {
+  koulut: [{
+    oppilaidenMäärä: 100,
+    luokat: [luokka1, luokka2]
+  }],
   tallennetaanko: false,
-  tietoAlustettu:false
-
+  tietoAlustettu: false
 }
 
 function reducer(state, action) {
   switch (action.type) {
 
-    case 'KOULUN_NIMI_MUUTTUI':
+    case 'KOULUN_NIMI_MUUTTUI': {
       console.log("Reduceria kutsuttiin", action)
       console.log("Koulun uusi nimi olisi:", action.payload)
-      return { ...state, nimi: action.payload, tallennetaanko: true };
+      const tilaKopio = { ...state, tallennetaanko: true }
+      tilaKopio.koulut[action.payload.index].nimi = action.payload.nimi
+      return tilaKopio
+    }
 
-  
-    case 'OPPILAAN_NIMI_MUUTTUI':
+    case 'OPPILAAN_NIMI_MUUTTUI': {
       console.log("Reduceria kutsuttiin", action)
-      let nimi = action.payload.nimi
-      let kouluKopio = { ...state }
-      kouluKopio.luokat[action.payload.luokanIndex].oppilaat[action.payload.oppilaanIndex].nimi = nimi
-      kouluKopio.tallennetaanko= true
-      return kouluKopio
+      const tilaKopio = { ...state, tallennetaanko: true }
+      tilaKopio.koulut[action.payload.koulunIndex].luokat[action.payload.luokanIndex].oppilaat[action.payload.oppilaanIndex].nimi = action.payload.nimi
+      return tilaKopio
+    }
+    case 'LISÄÄ_KOULU': {
+      console.log("Reduceria kutsuttiin", action)
+      const uudetKoulut = [...state.koulut,{ nimi: "oletusnimi" ,luokat:[]}]
+      return {...state, koulut:uudetKoulut}
+    }
     case 'PÄIVITÄ_TALLENNUSTILA':
       return { ...state, tallennetaanko: action.payload }
 
     case 'ALUSTA_DATA':
-      return {...action.payload, tietoAlustettu:true} 
+      return { ...action.payload, tietoAlustettu: true }
 
 
     default:
@@ -61,14 +67,14 @@ function reducer(state, action) {
 
 function App() {
 
-  const [koulu, dispatch] = useReducer(reducer, koulu_);
+  const [appData, dispatch] = useReducer(reducer, appiksenData);
 
   useEffect(() => {
     let kouludata = localStorage.getItem('kouludata');
     if (kouludata == null) {
       console.log("Data luettiin vakiosta")
-      localStorage.setItem('kouludata', JSON.stringify(koulu_));
-      dispatch({ type: "ALUSTA_DATA", payload: koulu_ })
+      localStorage.setItem('kouludata', JSON.stringify(appiksenData));
+      dispatch({ type: "ALUSTA_DATA", payload: appiksenData })
 
     } else {
       console.log("Data luettiin local storagesta")
@@ -79,20 +85,21 @@ function App() {
   }, []);
   useEffect(() => {
 
-    if (koulu.tallennetaanko == true) {
+    if (appData.tallennetaanko == true) {
       console.log("koulun nimi pitää tallentaa")
-      console.log("koulu:",koulu)
-      
-      localStorage.setItem('kouludata', JSON.stringify(koulu));
+      console.log("koulu:", appData)
+
+      localStorage.setItem('kouludata', JSON.stringify(appData));
       dispatch({ type: "PÄIVITÄ_TALLENNUSTILA", payload: false })
     }
-  }, [koulu.tallennetaanko]);
+  }, [appData.tallennetaanko]);
 
 
   return (
     <div>
 
-      {koulu.tietoAlustettu && <Koulu koulu={koulu} dispatch={dispatch} />}
+      {appData.tietoAlustettu && appData.koulut.map((koulu, index) => <Koulu koulunIndex={index} index={index} koulu={koulu} dispatch={dispatch} />)}
+      <button onClick={() => dispatch({ type: 'LISÄÄ_KOULU' })}>Lisää uus koulu</button>
     </div>
   );
 }
