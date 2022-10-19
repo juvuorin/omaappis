@@ -50,8 +50,7 @@ function reducer(state, action) {
     }
     case 'LISÄÄ_KOULU': {
       console.log("Reduceria kutsuttiin", action)
-      const uudetKoulut = [...state.koulut,{ nimi: "oletusnimi" ,luokat:[]}]
-      return {...state, koulut:uudetKoulut}
+      return {...state, koulut:[...state.koulut,{ nimi: "oletusnimi" ,luokat:[]}]}
     }
     case 'PÄIVITÄ_TALLENNUSTILA':
       return { ...state, tallennetaanko: action.payload }
