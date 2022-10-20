@@ -35,19 +35,34 @@ function reducer(state, action) {
   switch (action.type) {
 
     case 'KOULUN_NIMI_MUUTTUI': {
-      console.log("Reduceria kutsuttiin", action)
-      console.log("Koulun uusi nimi olisi:", action.payload)
+      console.log("Koulun nimi muuttui", action)
       const tilaKopio = { ...state, tallennetaanko: true }
       tilaKopio.koulut[action.payload.index].nimi = action.payload.nimi
       return tilaKopio
     }
 
     case 'OPPILAAN_NIMI_MUUTTUI': {
-      console.log("Reduceria kutsuttiin", action)
+      console.log("Oppilaan nimi muuttui", action)
       const tilaKopio = { ...state, tallennetaanko: true }
-      tilaKopio.koulut[action.payload.koulunIndex].luokat[action.payload.luokanIndex].oppilaat[action.payload.oppilaanIndex].nimi = action.payload.nimi
+      tilaKopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat[action.payload.oppilasIndex].nimi = action.payload.nimi
       return tilaKopio
     }
+    //STRICT MODE ON
+/*     case 'LISÄÄ_OPPILAS': {
+      console.log("Lisää oppilas", action)
+      const kopio = JSON.parse(JSON.stringify(state))
+      kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({nimi:"oletusnimioppilaalle"})
+      return kopio
+}
+ */    //STRICT MODE OFF
+    case 'LISÄÄ_OPPILAS': {
+      console.log("Lisää oppilas", action)
+      const kopio = {...state}
+      kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({nimi:"oletusnimioppilaalle"})
+      return kopio
+    }
+
+
     case 'LISÄÄ_KOULU': {
       console.log("Reduceria kutsuttiin", action)
       return {...state, koulut:[...state.koulut,{ nimi: "oletusnimi" ,luokat:[]}], tallennetaanko:true}
@@ -97,7 +112,7 @@ function App() {
   return (
     <div>
 
-      {appData.tietoAlustettu && appData.koulut.map((koulu, index) => <Koulu koulunIndex={index} index={index} koulu={koulu} dispatch={dispatch} />)}
+      {appData.tietoAlustettu && appData.koulut.map((koulu, index) => <Koulu kouluIndex={index} koulu={koulu} dispatch={dispatch} />)}
       <button onClick={() => dispatch({ type: 'LISÄÄ_KOULU' })}>Lisää uus koulu</button>
     </div>
   );
