@@ -10,10 +10,9 @@ const Oppilas = (props) => {
         payload:
           {
           nimi:event.target.value,
-          oppilaanIndex:props.index,
-          koulunIndex:props.koulunIndex,
-  
-          luokanIndex:props.luokanIndex}
+          oppilasIndex:props.oppilasIndex,
+          kouluIndex:props.kouluIndex,
+          luokkaIndex:props.luokkaIndex}
           })}}  value = {props.oppilas.nimi}/>
   
       </div>
