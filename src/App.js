@@ -47,25 +47,37 @@ function reducer(state, action) {
       tilaKopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat[action.payload.oppilasIndex].nimi = action.payload.nimi
       return tilaKopio
     }
-    //STRICT MODE ON
-/*     case 'LISÄÄ_OPPILAS': {
-      console.log("Lisää oppilas", action)
-      const kopio = JSON.parse(JSON.stringify(state))
-      kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({nimi:"oletusnimioppilaalle"})
-      return kopio
-}
- */    //STRICT MODE OFF
+    // STRICT MODE ON - tässä muodostetaan koko tilasta kopio, tukee concurrent modea
+    // Vähän "krouvi" ratkaisu, mutta helppo 
+    /*case 'LISÄÄ_OPPILAS': {
+          console.log("Lisää oppilas", action)
+          const kopio = JSON.parse(JSON.stringify(state))
+          kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({nimi:"oletusnimioppilaalle tai tyhjä merkkijono tms"})
+          return kopio
+    }
+     */
+    // STRICT MODE OFF - tässä mutatoidaan tilaa eri "kierrosten" välillä (siis eri kerrat kun reducer funktiota kutsutaan)
+    // luodaan vain pintakopio juuriobjektista, mutta lasten viittauksen viittailevat "vanhaan dataan" - toiminee hyvin
+    // tässä tenttiappista tehdessä tässä kohtaa kurssia. Mutatointi viittaa tässä siihen, että palautettu data (returnin jälkeen)
+    // sisältää muutoksia, vaikka juuriobjekti onkin uusi.
+
+    // Tämä koodi ei toimi strict modessa, koska vaikka juuriobjekti on kopioitu, viittaavat "lapset" "vanhaan" dataan. React kuitenkin
+    // tekee strict modessa toisen kutsun reduceriin "uudella" tilalla. Uutta on kuitenkin vain juuriobjekti itsessään, jonka lapset 
+    // viittaavat vanhoihin objekteihin/listoihin jne. Return lauseessa palautettu "kokonaistila" on siis tässä tapauksessa muuttunut  
+    // ja strict moden kakkoskierroksella se nähdään - oppilaiden lista kasvoi yhdellä ja edellisellä kierroksella ja jos luokka viittaa
+    // samaan vanhaan listaan myös kakkoskierroksella (vaikka juuriobjektin viittaus onkin "uusi"), nähdään se kahden oppilaan
+    // lisäämisenä 
     case 'LISÄÄ_OPPILAS': {
       console.log("Lisää oppilas", action)
-      const kopio = {...state}
-      kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({nimi:"oletusnimioppilaalle"})
+      const kopio = { ...state }
+      kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({ nimi: "oletusnimioppilaalle" })
       return kopio
     }
 
 
     case 'LISÄÄ_KOULU': {
       console.log("Reduceria kutsuttiin", action)
-      return {...state, koulut:[...state.koulut,{ nimi: "oletusnimi" ,luokat:[]}], tallennetaanko:true}
+      return { ...state, koulut: [...state.koulut, { nimi: "oletusnimi", luokat: [] }], tallennetaanko: true }
     }
     case 'PÄIVITÄ_TALLENNUSTILA':
       return { ...state, tallennetaanko: action.payload }
