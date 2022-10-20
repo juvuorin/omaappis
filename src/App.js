@@ -67,7 +67,8 @@ function reducer(state, action) {
     
     // Tämä johtuu siitä, että strict modessa toisen kierroksen reducer kutsussa käytetään samaa juuriobjektin viittausta
     // kuin mitä käytettiin ensimmäisellä kierroksella - olemme menneet ykköskierroksella muuttamaan objektia ja siksi
-    // homme ei pelitä.
+    // homma ei pelitä.
+  
     case 'LISÄÄ_OPPILAS': {
       console.log("Lisää oppilas", action)
       const kopio = { ...state }
