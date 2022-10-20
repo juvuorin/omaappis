@@ -57,16 +57,17 @@ function reducer(state, action) {
     }
      */
     // STRICT MODE OFF - tässä mutatoidaan tilaa eri "kierrosten" välillä (siis eri kerrat kun reducer funktiota kutsutaan)
-    // luodaan vain pintakopio juuriobjektista, mutta lasten viittauksen viittailevat "vanhaan dataan" - toiminee hyvin
-    // tässä tenttiappista tehdessä tässä kohtaa kurssia. Mutatointi viittaa tässä siihen, että palautettu data (returnin jälkeen)
+    // luodaan vain pintakopio juuriobjektista, mutta lasten viittauksen viittailevat "vanhaan dataan" - toimii hyvin
+    // tässä tenttiappista tehdessä, tässä kohtaa kurssia. Mutatointi viittaa tässä siihen, että palautettu data (returnin jälkeen)
     // sisältää muutoksia, vaikka juuriobjekti onkin uusi.
 
     // Tämä koodi ei toimi strict modessa, koska vaikka juuriobjekti on kopioitu, viittaavat "lapset" "vanhaan" dataan. React kuitenkin
-    // tekee strict modessa toisen kutsun reduceriin "uudella" tilalla. Uutta on kuitenkin vain juuriobjekti itsessään, jonka lapset 
-    // viittaavat vanhoihin objekteihin/listoihin jne. Return lauseessa palautettu "kokonaistila" on siis tässä tapauksessa muuttunut  
-    // ja strict moden kakkoskierroksella se nähdään - oppilaiden lista kasvoi yhdellä ja edellisellä kierroksella ja jos luokka viittaa
-    // samaan vanhaan listaan myös kakkoskierroksella (vaikka juuriobjektin viittaus onkin "uusi"), nähdään se kahden oppilaan
-    // lisäämisenä 
+    // tekee strict modessa toisen kutsun reduceriin vanhalla datalla (vanha viittaus), johon me olemme ekalla kierroksella lisänneet
+    // jo yhden oppilaan 
+    
+    // Tämä johtuu siitä, että strict modessa toisen kierroksen reducer kutsussa käytetään samaa juuriobjektin viittausta
+    // kuin mitä käytettiin ensimmäisellä kierroksella - olemme menneet ykköskierroksella muuttamaan objektia ja siksi
+    // homme ei pelitä.
     case 'LISÄÄ_OPPILAS': {
       console.log("Lisää oppilas", action)
       const kopio = { ...state }
