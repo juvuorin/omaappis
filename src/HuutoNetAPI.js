@@ -11,7 +11,7 @@ function reducer(state, action) {
       throw new Error("Action.type kentän arvoa ei tunnistettu");
   }
 }
-function App() {
+function AppHuuto() {
   const [appData, dispatch] = useReducer(reducer, { dataInitialized: false });
 
   useEffect(() => {
@@ -28,4 +28,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppHuuto;
