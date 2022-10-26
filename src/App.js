@@ -3,6 +3,7 @@ import './App.css';
 import Koulu from './Koulu';
 import { useState, useReducer, useEffect } from "react"
 import Nappain from './Nappain';
+import axios from 'axios' // npm install axios , jos ei ole jo ladattu
 
 let oppilas1 = { nimi: "Olli Oppilas" }
 
@@ -98,18 +99,14 @@ function App() {
   const [appData, dispatch] = useReducer(reducer, appiksenData);
 
   useEffect(() => {
-    let kouludata = localStorage.getItem('kouludata');
-    if (kouludata == null) {
-      console.log("Data luettiin vakiosta")
-      localStorage.setItem('kouludata', JSON.stringify(appiksenData));
-      dispatch({ type: "ALUSTA_DATA", payload: appiksenData })
 
-    } else {
-      console.log("Data luettiin local storagesta")
-
-      dispatch({ type: "ALUSTA_DATA", payload: (JSON.parse(kouludata)) })
+    const getData =async () => {
+      const result = await axios('http://localhost:8080');   
+      console.log("result:",result)     
+      dispatch({ type: "ALUSTA_DATA", payload: result.data })
     }
 
+    getData()
   }, []);
   useEffect(() => {
 

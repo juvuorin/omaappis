@@ -1,0 +1,44 @@
+{
+  "koulut": [
+    {
+      "oppilaidenMäärä": 100,
+      "luokat": [
+        {
+          "nimi": "3A",
+          "opplaidenMäärä": 27,
+          "oppilaat": [
+            {
+              "nimi": "Olli Oppilasklököäläöl"
+            },
+            {
+              "nimi": "Kalle Kolmonenölkklök"
+            },
+            {
+              "nimi": "oletusnimiosdsdppilaalle"
+            }
+          ]
+        },
+        {
+          "nimi": "2B",
+          "opplaidenMäärä": 24,
+          "oppilaat": [
+            {
+              "nimi": "Mikko Mallikas'äö'äö"
+            }
+          ]
+        }
+      ],
+      "nimi": "äö'äö'äö'ädsfgfgdgf"
+    },
+    {
+      "nimi": "Suoraman hikipinkojen koulu",
+      "luokat": []
+    },
+    {
+      "nimi": "oletusnimi",
+      "luokat": []
+    }
+  ],
+  "tallennetaanko": true,
+  "tietoAlustettu": true
+}
