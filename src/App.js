@@ -65,11 +65,11 @@ function reducer(state, action) {
     // Tämä koodi ei toimi strict modessa, koska vaikka juuriobjekti on kopioitu, viittaavat "lapset" "vanhaan" dataan. React kuitenkin
     // tekee strict modessa toisen kutsun reduceriin vanhalla datalla (vanha viittaus), johon me olemme ekalla kierroksella lisänneet
     // jo yhden oppilaan 
-    
+
     // Tämä johtuu siitä, että strict modessa toisen kierroksen reducer kutsussa käytetään samaa juuriobjektin viittausta
     // kuin mitä käytettiin ensimmäisellä kierroksella - olemme menneet ykköskierroksella muuttamaan objektia ja siksi
     // homma ei pelitä.
-  
+
     case 'LISÄÄ_OPPILAS': {
       console.log("Lisää oppilas", action)
       const kopio = { ...state }
@@ -99,24 +99,25 @@ function App() {
   const [appData, dispatch] = useReducer(reducer, appiksenData);
 
   useEffect(() => {
-
-    const getData =async () => {
-      const result = await axios('http://localhost:8080');   
-      console.log("result:",result)     
+    const getData = async () => {
+      const result = await axios('http://localhost:8080');
+      console.log("result:", result)
       dispatch({ type: "ALUSTA_DATA", payload: result.data })
     }
-
     getData()
   }, []);
   useEffect(() => {
 
-    if (appData.tallennetaanko == true) {
-      console.log("koulun nimi pitää tallentaa")
-      console.log("koulu:", appData)
+    const saveData = async () => {
 
-      localStorage.setItem('kouludata', JSON.stringify(appData));
+      const result = await axios('http://localhost:8080');  //Tähän jotenkin PUT ja kaikki data palvelimelle....
+      console.log("result:", result)
       dispatch({ type: "PÄIVITÄ_TALLENNUSTILA", payload: false })
     }
+    if (appData.tallennetaanko == true) {
+      saveData()
+    }
+
   }, [appData.tallennetaanko]);
 
 
