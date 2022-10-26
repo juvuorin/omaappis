@@ -102,7 +102,7 @@ function App() {
     const getData = async () => {
       const result = await axios('http://localhost:8080');
       console.log("result:", result)
-      dispatch({ type: "ALUSTA_DATA", payload: result.data })
+      dispatch({ type: "ALUSTA_DATA", payload: result.data.data })
     }
     getData()
   }, []);
@@ -111,6 +111,7 @@ function App() {
     const saveData = async () => {
 
       try {
+      
         const result = await axios.post('http://localhost:8080', {
           data: appData
         })
