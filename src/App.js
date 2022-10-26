@@ -110,9 +110,14 @@ function App() {
 
     const saveData = async () => {
 
-      const result = await axios('http://localhost:8080');  //Tähän jotenkin PUT ja kaikki data palvelimelle....
-      console.log("result:", result)
-      dispatch({ type: "PÄIVITÄ_TALLENNUSTILA", payload: false })
+      try {
+        const result = await axios.post('http://localhost:8080', {
+          data: appData
+        })
+        dispatch({ type: "PÄIVITÄ_TALLENNUSTILA", payload: false })
+      } catch (error) {
+        console.log("virhetilanne",error)
+      }
     }
     if (appData.tallennetaanko == true) {
       saveData()

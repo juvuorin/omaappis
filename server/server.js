@@ -18,7 +18,7 @@ const requestListener = function (req, res) {
     res.writeHead(200);
     res.end(data);
   } 
-  if (req.method === "PUT") {
+  if (req.method === "POST") {
       
 
   }
