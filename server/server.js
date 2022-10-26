@@ -5,7 +5,7 @@ const port = 8080
 
 app.get('/', (req, res) => {
   // tiedon luku asynkronisesti
-  res.send('Hello World!')
+  res.send('Hello!')
 })
 app.post('/', (req, res) => {
   // tiedon kirjoitus asynkronisesti  req.body antanee tarvittavan datan
