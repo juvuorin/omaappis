@@ -1,3 +1,36 @@
+
+
+
+/* 
+
+
+
+JavaScript
+
+- funktio, map-funktio, => nuolifunktio, 
+- [...lista]
+- {...o}
+- lista =[10,20]
+- [a,b] = lista  //array destructuring
+- objekti ={etunimi:"pekka",sukunimi:"liikanen"}
+- {etunimi} = objekti  //object destructuring 
+- split -> ["a","b"]
+- filter , reduce
+- JSON.stringify, JSON.parse
+- false && ?
+
+React 
+
+- reducer, useState, useEffect, 
+
+
+ */
+
+
+
+
+
+
 import logo from './logo.svg';
 import './App.css';
 import Koulu from './Koulu';
@@ -71,12 +104,17 @@ function reducer(state, action) {
     // homma ei pelitä.
 
     case 'LISÄÄ_OPPILAS': {
-      console.log("Lisää oppilas", action)
+      console.log('LISÄÄ_OPPILAS')
       const kopio = { ...state }
       kopio.koulut[action.payload.kouluIndex].luokat[action.payload.luokkaIndex].oppilaat.push({ nimi: "oletusnimioppilaalle" })
       return kopio
     }
-
+    case 'LATAUS_ALOITETTIIN': 
+      console.log ('LATAUS_ALOITETTIIN')
+      return {...state,...action.payload}
+    case 'LATAUS_EPÄONNISTUI': 
+      console.log ('LATAUS_EPÄONNISTUI')
+      return {...state,...action.payload}
 
     case 'LISÄÄ_KOULU': {
       console.log("Reduceria kutsuttiin", action)
@@ -85,8 +123,9 @@ function reducer(state, action) {
     case 'PÄIVITÄ_TALLENNUSTILA':
       return { ...state, tallennetaanko: action.payload }
 
-    case 'ALUSTA_DATA':
-      return { ...action.payload, tietoAlustettu: true }
+    case 'LATAUS_ONNISTUI':
+      console.log('LATAUS_ONNISTUI')
+      return { ...action.payload, latausAloitettu: false, tietoAlustettu: true }
 
 
     default:
@@ -100,9 +139,18 @@ function App() {
 
   useEffect(() => {
     const getData = async () => {
-      const result = await axios('http://localhost:8080');
-      console.log("result:", result)
-      dispatch({ type: "ALUSTA_DATA", payload: result.data.data })
+
+
+      try {
+        dispatch({ type: "LATAUS_ALOITETTIIN", payload: {latausAloitettu: true }})
+        const result = await axios('http://localhost:8080');
+        console.log("result:", result)
+        dispatch({ type: "LATAUS_ONNISTUI", payload: result.data.data })
+      } catch (error) { 
+        dispatch({ type: "LATAUS_EPÄONNISTUI", payload: { latausEpäonnistui:true} })
+
+      }
+        
     }
     getData()
   }, []);
@@ -111,13 +159,13 @@ function App() {
     const saveData = async () => {
 
       try {
-      
+
         const result = await axios.post('http://localhost:8080', {
           data: appData
         })
         dispatch({ type: "PÄIVITÄ_TALLENNUSTILA", payload: false })
       } catch (error) {
-        console.log("virhetilanne",error)
+        console.log("virhetilanne", error)
       }
     }
     if (appData.tallennetaanko == true) {
