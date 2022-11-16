@@ -136,11 +136,9 @@ function reducer(state, action) {
 function App() {
 
   const [appData, dispatch] = useReducer(reducer, appiksenData);
-
   useEffect(() => {
+
     const getData = async () => {
-
-
       try {
         dispatch({ type: "LATAUS_ALOITETTIIN", payload: {latausAloitettu: true }})
         const result = await axios('http://localhost:8080');
@@ -150,7 +148,7 @@ function App() {
         dispatch({ type: "LATAUS_EPÄONNISTUI", payload: { latausEpäonnistui:true} })
 
       }
-        
+  
     }
     getData()
   }, []);
