@@ -11,8 +11,37 @@ const saltRounds = 10;
 //const myPlaintextPassword = 'kissa';
 
 //const User = require("./userModel");
- 
- 
+
+
+/* const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'juvuorin@gmail.com',
+    pass: '**************',
+  },
+});
+
+
+transporter.sendMail({
+  from: '"Juuso Vuorinen" <juvuorin@gmail.com>', // sender address
+  to: "juvuorin@gmail.com", // list of receivers
+  subject: "Postia tenttijärjestelmästä", // Subject line
+  text: "Sulle on siellä uusi tentti luotuna, käypä tekemässä", // plain text body
+  html: "<b>Sulle on siellä uusi tentti luotuna, käypä tekemässä</b>", // html body
+}).then(info => {
+  console.log({ info });
+}).catch(console.error);
+
+
+ */
+
+
+
+
+
+
 app.use(express.json());
 
 
@@ -28,7 +57,7 @@ const pool = new Pool({
 
 app.use(cors())  //jos ei toimi, niin "npm install cors"
 app.use(express.json());
-app.use(bodyparser.urlencoded({extended:false}))
+app.use(bodyparser.urlencoded({ extended: false }))
 app.use(bodyparser.json())
 
 //let data = fs.readFileSync('./kouludata.json', { encoding: 'utf8', flag: 'r' });
@@ -59,14 +88,14 @@ let email = "vilho@gmail.com"
 // Handling post request
 app.post("/signup", async (req, res, next) => {
   const { email, password } = req.body;
-  let result; 
+  let result;
   try {
 
     let hashed = await bcrypt.hash(password, saltRounds)
-    result = await pool.query("insert into users (email, password) values ($1,$2) returning id",[email, hashed])
+    result = await pool.query("insert into users (email, password) values ($1,$2) returning id", [email, hashed])
 
-  } catch (error){
-    
+  } catch (error) {
+
     //const error = new Error("Error! Something went wrong.");
     return next(error);
   }
@@ -85,24 +114,26 @@ app.post("/signup", async (req, res, next) => {
     .status(201)
     .json({
       success: true,
-      data: { userId: result.rows[0].id,
-          email: email, token: token },
+      data: {
+        userId: result.rows[0].id,
+        email: email, token: token
+      },
     });
 });
- 
+
 
 
 
 // Handling post request
 app.post("/login", async (req, res, next) => {
   let { email, password } = req.body;
- 
+
   let existingUser;
-  let passwordMatch=false;
+  let passwordMatch = false;
   try {
-//    existingUser = await User.findOne({ email: email });
-    let result = await pool.query ("select * from users where email=$1",[email])
-    existingUser = {password:result.rows[0].password,email:result.rows[0].email, id:result.rows[0].id};
+    //    existingUser = awit User.findOne({ email: email });
+    let result = await pool.query("select * from users where email=$1", [email])
+    existingUser = { password: result.rows[0].password, email: result.rows[0].email, id: result.rows[0].id };
     passwordMatch = await bcrypt.compare(password, existingUser.password)
 
   } catch {
@@ -128,7 +159,7 @@ app.post("/login", async (req, res, next) => {
     const error = new Error("Error! Something went wrong.");
     return next(error);
   }
- 
+
   res
     .status(200)
     .json({
@@ -142,20 +173,45 @@ app.post("/login", async (req, res, next) => {
 });
 
 
+//OAUTH2,  NODE express passport plugin (gmail, facebook...)
+const isAdmin = async (req, res, next) => {
 
-const verifyToken = (req, res, next) =>{
+  try {
+    result = await pool.query("SELECT * FROM USERS WHERE email = $1 ", [req.decoded?.email])
+    let admin = result.rows[0].admin
+    if (admin) { next() } {
+      res.status(401).send("no access!")
+    }
+    //res.send('Tais datan tallennus onnistua')    
+  }
+  catch (e) {
+    res.status(500).send(e)
+  }
 
-  const token = req.headers.authorization?.split(' ')[1]; 
+
+  const token = req.headers.authorization?.split(' ')[1];
   //Authorization: 'Bearer TOKEN'
-  if(!token)
-  {
-      res.status(200).json({success:false, message: "Error!Token was not provided."});
+  if (!token) {
+    res.status(200).json({ success: false, message: "Error!Token was not provided." });
   }
   //Decoding the token
-  const decodedToken = jwt.verify(token,"secretkeyappearshere" );
+  const decodedToken = jwt.verify(token, "secretkeyappearshere");
   req.decoded = decodedToken
-  next() 
-} 
+  next()
+}
+
+const verifyToken = (req, res, next) => {
+
+  const token = req.headers.authorization?.split(' ')[1];
+  //Authorization: 'Bearer TOKEN'
+  if (!token) {
+    res.status(200).json({ success: false, message: "Error!Token was not provided." });
+  }
+  //Decoding the token
+  const decodedToken = jwt.verify(token, "secretkeyappearshere");
+  req.decoded = decodedToken
+  next()
+}
 
 app.use(verifyToken)
 
@@ -163,8 +219,8 @@ app.get('/', (req, res) => {
   console.log(req.decoded)
   //SELECT 
   console.log("Palvelimeen tultiin kyselemään dataa")
- //const data = fs.readFileSync('./kouludata.json', { encoding: 'utf8', flag: 'r' }); //Voi kestää useita sekunteja!
- res.send("Nyt ollaan palvelussa, joka edellyttää kirjautumisen")
+  //const data = fs.readFileSync('./kouludata.json', { encoding: 'utf8', flag: 'r' }); //Voi kestää useita sekunteja!
+  res.send("Nyt ollaan palvelussa, joka edellyttää kirjautumisen")
 })
 /* app.post('/luokat', async (req, res) => {  
   console.log ("nyt lisätään kysymystä")
@@ -175,28 +231,29 @@ app.get('/', (req, res) => {
   catch(e){
     res.status(500).send(e)
   }
- */  
-  //app.post('/luokat/:luokkaId/oppilaat:', async (req, res) => {  
+ */
+//app.post('/luokat/:luokkaId/oppilaat:', async (req, res) => {  
 
-  app.post('/koulut/:kouluId/luokat/:luokkaId/oppilaat:', async (req, res) => {  
-  const kouluId = Number(req.params.luokkaId)  
-  const luokkaId = Number(req.params.kouluId)  
-  
-  console.log ("nyt lisätään kysymystä")
-//    console.log ("kouluId",kouluId)
-    try {
-      result = await pool.query("INSERT INTO luokka (koulu_id, nimi) VALUES ($1,$2) ",[id,req.body.nimi])
-      res.send('Tais datan tallennus onnistua')    
-    }
-    catch(e){
-      res.status(500).send(e)
-    }
-  
+app.post('/koulut/:kouluId/luokat', isAdmin, async (req, res) => {
+  //if (req.isAdmin) {
+  const kouluId = Number(req.params.luokkaId)
+  const luokkaId = Number(req.params.kouluId)
+
+  console.log("nyt lisätään luokkaa")
+  //    console.log ("kouluId",kouluId)
+  try {
+    result = await pool.query("INSERT INTO luokka (koulu_id, nimi) VALUES ($1,$2) ", [id, req.body.nimi])
+    res.send('Tais datan tallennus onnistua')
+  }
+  catch (e) {
+    res.status(500).send(e)
+  }
+
 
   // console.log("Palvelimeen tultiin tallentelemaan dataa")
-// data = req.body  //INSERT
- //fs.writeFileSync('kouludata.json', JSON.stringify(req.body));
- //res.send('Tais datan tallennus onnistua, kun tänne tultiin :)')
+  // data = req.body  //INSERT
+  //fs.writeFileSync('kouludata.json', JSON.stringify(req.body));
+  //res.send('Tais datan tallennus onnistua, kun tänne tultiin :)')
 })
 
 
