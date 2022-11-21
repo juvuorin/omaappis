@@ -180,7 +180,7 @@ const isAdmin = async (req, res, next) => {
     result = await pool.query("SELECT * FROM USERS WHERE email = $1 ", [req.decoded?.email])
     let admin = result.rows[0].admin
     if (admin) { next() } {
-      res.status(401).send("no access!")
+      res.status(403).send("no access!")
     }
     //res.send('Tais datan tallennus onnistua')    
   }
