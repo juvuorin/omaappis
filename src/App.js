@@ -36,7 +36,7 @@ import './App.css';
 import Koulu from './Koulu';
 import { useState, useReducer, useEffect } from "react"
 import Nappain from './Nappain';
-import {axios} from 'axios' // npm install axios , jos ei ole jo ladattu
+import axios from 'axios' // npm install axios , jos ei ole jo ladattu
 
 let oppilas1 = { nimi: "Olli Oppilas" }
 
